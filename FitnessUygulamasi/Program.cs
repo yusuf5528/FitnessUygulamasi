@@ -48,7 +48,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// --- SEED DATA BAÞLANGIÇ ---
+// --- SEED DATA  ---
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

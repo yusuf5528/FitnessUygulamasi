@@ -4,10 +4,12 @@
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Specialty { get; set; } // Uzmanlık: Yoga, Fitness vb.
-        public string ImageUrl { get; set; } = ""; // Resim yolu
+        public string Specialty { get; set; }
 
-        // İlişkiler
-        public ICollection<Appointment> Appointments { get; set; }
+        // Soru işareti (?) ekledik: Resim olmasa da olur.
+        public string? ImageUrl { get; set; }
+
+        // Soru işareti (?) ekledik: Henüz randevusu olmasa da olur.
+        public ICollection<Appointment>? Appointments { get; set; }
     }
 }

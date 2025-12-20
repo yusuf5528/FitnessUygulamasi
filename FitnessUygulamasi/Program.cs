@@ -1,35 +1,41 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using FitnessUygulamasi.Data;
 using FitnessUygulamasi.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Veritabaný Baðlantýsýný Yapýlandýr
+// 1. VeritabanÄ± BaÄŸlantÄ±sÄ±nÄ± YapÄ±landÄ±r
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// 2. Identity (Üyelik Sistemi) Ayarlarý
-// Þifre kurallarýný hocanýn isteðine göre (basit 'sau' þifresi için) gevþetiyoruz.
+
+
+// 2. Identity (Ãœyelik Sistemi ve Rol) AyarlarÄ±
+// Admin ve Roller iÃ§in bu blok geÃ§erli olmalÄ±
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
+    
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
-    options.Password.RequiredLength = 3; // 'sau' 3 harfli olduðu için
+    options.Password.RequiredLength = 3; // 'sau' ÅŸifresi iÃ§in
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+builder.Services.AddTransient<IEmailSender, FitnessUygulamasi.Services.EmailSender>();
 
 var app = builder.Build();
 
-// 3. HTTP Ýstek Hattý (Pipeline)
+// 3. HTTP Ä°stek HattÄ± (Pipeline)
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -41,20 +47,20 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication(); // Giriþ yapma (Kimlik Doðrulama)
-app.UseAuthorization();  // Yetki kontrolü
+app.UseAuthentication(); // GiriÅŸ yapma
+app.UseAuthorization();  // Yetki kontrolÃ¼
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// --- SEED DATA  ---
+app.MapRazorPages(); // Login sayfalarÄ± iÃ§in gerekli
+
+// --- SEED DATA (Admin Ekleme) ---
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     await DbSeeder.SeedRolesAndAdminAsync(services);
 }
-
-
 
 app.Run();

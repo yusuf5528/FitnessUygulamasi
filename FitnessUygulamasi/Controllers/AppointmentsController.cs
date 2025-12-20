@@ -50,9 +50,9 @@ namespace FitnessUygulamasi.Controllers
         // GET: Appointments/Create
         public IActionResult Create()
         {
-            ViewData["ServiceId"] = new SelectList(_context.Services, "Id", "Id");
-            ViewData["TrainerId"] = new SelectList(_context.Trainers, "Id", "Id");
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
+            // Antrenör ve Hizmet isimlerini listeye çekiyoruz
+            ViewData["TrainerId"] = new SelectList(_context.Trainers, "Id", "Name");
+            ViewData["ServiceId"] = new SelectList(_context.Services, "Id", "Name");
             return View();
         }
 
